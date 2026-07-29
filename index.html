@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Assistente IA WinThor</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chat {
+            width: 900px;
+            max-width: 95%;
+            height: 90vh;
+            background: white;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: #172b4d;
+            color: white;
+            padding: 16px 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-titulo {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .nova-conversa {
+            border: 1px solid rgba(255, 255, 255, .4);
+            background: rgba(255, 255, 255, .1);
+            color: white;
+            padding: 9px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .nova-conversa:hover {
+            background: rgba(255, 255, 255, .2);
+        }
+
+        .mensagens {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .mensagem {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .usuario {
+            align-self: flex-end;
+            background: #172b4d;
+            color: white;
+        }
+
+        .ia {
+            align-self: flex-start;
+            background: #eef2f7;
+            color: #172b4d;
+        }
+
+        .digitando {
+            opacity: 0.6;
+            font-style: italic;
+        }
+
+        .entrada {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #ddd;
+            gap: 10px;
+        }
+
+        .entrada input {
+            flex: 1;
+            padding: 14px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .entrada input:focus {
+            border-color: #172b4d;
+        }
+
+        .entrada button {
+            border: none;
+            background: #172b4d;
+            color: white;
+            padding: 0 22px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .entrada button:hover {
+            background: #24456f;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="chat">
+
+        <div class="header">
+
+            <div class="header-titulo">
+                Assistente IA WinThor
+            </div>
+
+            <button class="nova-conversa" onclick="novaConversa()">
+                + Nova conversa
+            </button>
+
+        </div>
+
+
+        <div id="mensagens" class="mensagens">
+            <div class="mensagem ia">
+                Olá! Pergunte qualquer coisa sobre vendas.
+            </div>
+        </div>
+
+
+        <div class="entrada">
+
+            <input id="texto" type="text" placeholder="Digite sua pergunta..." autocomplete="off">
+
+            <button onclick="enviarPergunta()">
+                Enviar
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <script>
+        const input =
+            document.getElementById("texto");
+
+        const mensagens =
+            document.getElementById("mensagens");
+
+
+        // =================================================
+        // ID DA CONVERSA
+        // =================================================
+
+        let conversaId =
+            localStorage.getItem("conversaId");
+
+        if (!conversaId) {
+            conversaId = gerarConversaId();
+
+            localStorage.setItem(
+                "conversaId",
+                conversaId
+            );
+        }
+
+
+        function gerarConversaId() {
+
+            return (
+                "conversa_" +
+                Date.now() +
+                "_" +
+                Math.random()
+                    .toString(36)
+                    .substring(2, 8)
+            );
+
+        }
+
+
+        // =================================================
+        // NOVA CONVERSA
+        // =================================================
+
+        function novaConversa() {
+
+            conversaId = gerarConversaId();
+
+
+            localStorage.setItem(
+                "conversaId",
+                conversaId
+            );
+
+
+            localStorage.removeItem(
+                "historicoTela"
+            );
+
+
+            mensagens.innerHTML = "";
+
+
+            adicionarMensagem(
+                "Olá! Nova conversa iniciada. O que deseja consultar?",
+                "ia"
+            );
+
+
+            input.value = "";
+
+            input.focus();
+
+        }
+
+        // =================================================
+        // ENTER ENVIA
+        // =================================================
+
+        input.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key === "Enter") {
+
+                    event.preventDefault();
+
+                    enviarPergunta();
+
+                }
+
+            }
+        );
+
+
+        // =================================================
+        // ADICIONAR MENSAGEM
+        // =================================================
+
+        function adicionarMensagem(
+            texto,
+            tipo,
+            salvar = true
+        ) {
+
+            const div =
+                document.createElement("div");
+
+            div.classList.add(
+                "mensagem",
+                tipo
+            );
+
+            div.innerHTML =
+                formatarResposta(texto);
+
+            mensagens.appendChild(div);
+
+            mensagens.scrollTop =
+                mensagens.scrollHeight;
+
+
+            if (salvar) {
+
+                const historicoTela =
+                    JSON.parse(
+                        localStorage.getItem(
+                            "historicoTela"
+                        ) || "[]"
+                    );
+
+                historicoTela.push({
+                    texto: texto,
+                    tipo: tipo
+                });
+
+                localStorage.setItem(
+                    "historicoTela",
+                    JSON.stringify(historicoTela)
+                );
+
+            }
+
+
+            return div;
+
+        }
+
+        function carregarHistoricoTela() {
+
+            const historicoTela =
+                JSON.parse(
+                    localStorage.getItem(
+                        "historicoTela"
+                    ) || "[]"
+                );
+
+
+            if (historicoTela.length === 0) {
+                return;
+            }
+
+
+            mensagens.innerHTML = "";
+
+
+            historicoTela.forEach(
+                function (item) {
+
+                    adicionarMensagem(
+                        item.texto,
+                        item.tipo,
+                        false
+                    );
+
+                }
+            );
+
+        }
+
+
+        // =================================================
+        // FORMATAR RESPOSTA
+        // =================================================
+
+        function formatarResposta(texto) {
+
+            let resultado = texto || "";
+
+            resultado = resultado.replace(
+                /\*\*(.*?)\*\*/g,
+                "<strong>$1</strong>"
+            );
+
+            resultado = resultado.replace(
+                /\n/g,
+                "<br>"
+            );
+
+            return resultado;
+
+        }
+
+
+        // =================================================
+        // ENVIAR PERGUNTA
+        // =================================================
+
+        async function enviarPergunta() {
+
+            const texto =
+                input.value.trim();
+
+
+            if (!texto) {
+                return;
+            }
+
+
+            adicionarMensagem(
+                texto,
+                "usuario"
+            );
+
+
+            input.value = "";
+
+            input.focus();
+
+            const carregando =
+                adicionarMensagem(
+                    "Pensando...",
+                    "ia",
+                    false
+                );
+
+            carregando.classList.add(
+                "digitando"
+            );
+
+
+            try {
+
+                const url =
+                    "http://127.0.0.1:8000/pergunta-omni"
+                    + "?texto="
+                    + encodeURIComponent(texto)
+
+                    + "&conversa_id="
+                    + encodeURIComponent(conversaId);
+
+
+                const resposta =
+                    await fetch(url);
+
+
+                if (!resposta.ok) {
+
+                    throw new Error(
+                        "Erro HTTP: "
+                        + resposta.status
+                    );
+
+                }
+
+
+                const dados =
+                    await resposta.json();
+
+
+                carregando.remove();
+
+
+                adicionarMensagem(
+                    dados.resposta,
+                    "ia"
+                );
+
+
+            }
+            catch (erro) {
+
+                carregando.remove();
+
+
+                adicionarMensagem(
+                    "Erro ao consultar a IA: "
+                    + erro.message,
+                    "ia"
+                );
+
+            }
+
+        }
+        carregarHistoricoTela();
+    </script>
+
+</body>
+
+</html>
