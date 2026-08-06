@@ -11,3 +11,5 @@ pip install anthropic httpx python-dotenv
 
 
 npx omniroute@latest
+
+uvicorn main:app --reload

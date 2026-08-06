@@ -1,5 +1,5 @@
 ###
-GET http://127.0.0.1:8000/venda/26-JUL-2026/26-JUL-2026
+GET http://127.0.0.1:8000/venda/01-AUG-2026/31-AUG-2026
 ###
 GET http://127.0.0.1:8000/venda/26-JUL-2026/26-JUL-2026/10
 
@@ -19,11 +19,16 @@ GET http://127.0.0.1:8000/pergunta-omni?texto=quanto que vendeu hoje
 ## ENTRADA E SAIDA
 
 ###
-GET http://127.0.0.1:8000/entradasaida/01-JUL-2026/10-JUL-2026
+GET http://127.0.0.1:8000/entradasaida/01-JUL-2026/01-JUL-2026
 ###
-GET http://127.0.0.1:8000/entradasaida/01-JUL-2026/10-JUL-2026/19
+GET http://127.0.0.1:8000/entradasaida/01-JUL-2026/01-JUL-2026/19
 ###
-GET http://127.0.0.1:8000/entradasaida/01-JUL-2026/10-JUL-2026/19/46
+GET http://127.0.0.1:8000/entradasaida/01-JUL-2026/01-JUL-2026/19/46
 ###
-GET http://127.0.0.1:8000/entradasaida/01-JUL-2026/10-JUL-2026/17/19/1475
+GET http://127.0.0.1:8000/entradasaida/01-JUL-2026/01-JUL-2026/22/59/1865
 
+
+
+## limite
+###
+GET http://127.0.0.1:8000/limite/01-AUG-2026/31-AUG-2026
