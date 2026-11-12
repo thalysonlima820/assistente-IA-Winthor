@@ -1,7 +1,7 @@
 ###
 GET http://127.0.0.1:8000/venda/01-AUG-2026/31-AUG-2026
 ###
-GET http://127.0.0.1:8000/venda/26-JUL-2026/26-JUL-2026/10
+GET http://127.0.0.1:8000/venda/26-JUL-2026/26-JUL-2026
 
 ###
 GET http://127.0.0.1:8000/estoque/53541
@@ -32,3 +32,14 @@ GET http://127.0.0.1:8000/entradasaida/01-JUL-2026/01-JUL-2026/22/59/1865
 ## limite
 ###
 GET http://127.0.0.1:8000/limite/01-AUG-2026/31-AUG-2026
+
+
+
+
+###
+POST http://127.0.0.1:8000/sql
+Content-Type: application/json
+
+{
+  "sql": "SELECT * FROM PCFILIAL"
+}

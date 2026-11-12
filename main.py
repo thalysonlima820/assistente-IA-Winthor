@@ -9,6 +9,7 @@ from venda.venda import router as Venda
 from estoque.estoque import router as Estoque
 from entrada_saida.entrada_saida import router as Entradasaida
 from limite.limite import router as Limite
+from sql.sql import router as Sql
 
 
 from memoria import (
@@ -38,6 +39,7 @@ app.include_router(Venda)
 app.include_router(Estoque)
 app.include_router(Entradasaida)
 app.include_router(Limite)
+app.include_router(Sql)
 
 def formatar_data(data_obj):
     meses = {
